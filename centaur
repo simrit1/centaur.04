@@ -1,0 +1,395 @@
+#!/usr/bin/env python3
+
+import requests
+import os,time,json,logging,platform
+from assets.banner import banner
+from assets.colors import white,red,brightred,yellow,reset
+from pprint import pprint
+
+
+logging.basicConfig(format=f"""{white}
+┏[%(asctime)s]
+┃
+┃
+┗[{red}%(message)s{white}...]""",
+datefmt=f"{white}%I{red}:{white}%M{red}:{white}%S%p",level=logging.DEBUG)
+
+class Scanner:	
+	def __init__(self):
+		os.system("clear")
+		self.base = "https://www.virustotal.com/vtapi/v2/"
+		self.__apikey=" " # virustotal api key
+		
+	def centaur(self):
+		while True:
+			banner()
+			try:
+			   choice = input("""%s
+┏[%s%s%s]
+┃
+┗[%sCentaur%s.04%s:~%s]$ """%(white,red,platform.node(),white,red,white,red,white))
+
+			   if choice == "submit":
+			   	self.file_submit()
+			   	
+			   elif choice == "rrpt":
+			   	self.resource_report()
+			   	
+			   elif choice == "iprpt":
+			   	self.ip_report()
+			   	
+			   elif choice == "drpt":
+			   	self.domain_report()
+			   	
+			   elif choice == "help" or choice == "h":
+			   	self.help()
+			   	
+			   elif choice == "quit" or choice == "q":
+			   	self.quit()
+			   	
+			   else:
+			   	print("""
+┃
+┃
+┗[%serror%s] invalid: cmd “%s%s%s”%s"""%(red,white,red,choice,white,reset));time.sleep(2)
+			except KeyboardInterrupt:
+			   	print("""
+┃
+┃
+┗[%sCTRL%s+%sC%s] process aborted.%s"""%(red,white,red,white,reset))
+			   	break			
+	def ip_report(self):
+		try:
+			"""
+			Getting IP address info
+			"""
+			ip = input("""%s
+┃
+┃
+┗[IP %sAddress%s]:~ """%(white,red,white))
+			base = "%sip-address/report"%self.base
+			params = {"ip":ip, "apikey":self.__apikey}
+			request = requests.get(base, params=params)
+			resp = request.json()
+			results = self.parse_resp(resp)
+			print("""%s
+┃
+┃
+┗[%s%s%s.]"""%(white,red,results["verbose_msg"],white));time.sleep(1)
+			
+			print(brightred)
+			pprint(results)
+			print(reset)
+			self.save_results(results)
+					
+		except KeyboardInterrupt:
+		    print("""
+┃
+┃
+┗[%sCTRL%s+%sC%s] process aborted.%s"""%(red,white,red,white,reset))
+		    sys.exit()									
+		except Exception as e:
+		    print("""%s
+┃
+┃
+┗[%serror%s]%s %s%s"""%(white,red,white,red,e,reset));time.sleep(1)
+		    input("""%s
+┃
+┃
+┗[%sPress %senter%s to continue%s.]:~ """%(white,red,white,red,white))
+		    
+		
+	def domain_report(self):
+		try:
+			"""
+			Get domain info
+			"""
+			domain = input("""%s
+┃
+┃
+┗[%sDomain%s]:~ """%(white,red,white))
+
+			base = "%sdomain/report"%self.base
+			params = {"domain":domain, "apikey":self.__apikey}
+			request = requests.get(base, params = params)
+			resp = request.json()
+			results = self.parse_resp(resp)
+			print("""%s
+┃
+┃
+┗[%s%s%s.]"""%(white,red,results["verbose_msg"],white));time.sleep(1)
+			
+			print(brightred)
+			pprint(results)
+			print(reset)
+			self.save_results(results)
+						
+		except KeyboardInterrupt:
+			print("""
+┃
+┃
+┗[%sCTRL%s+%sC%s] process aborted.%s"""%(red,white,red,white,reset))
+			sys.exit()
+			
+		except Exception as e:
+			 print("""%s
+┃
+┃
+┗[%serror%s]%s %s%s"""%(white,red,white,red,e,reset));time.sleep(1)
+			 input("""%s
+┃
+┃
+┗[%sPress %senter%s to continue%s.]:~ """%(white,red,white,red,white))
+
+			 
+		
+	def file_submit(self):
+		try:
+			"""
+			submiting potential malicious file for analysis
+			"""
+			file = input("""%s
+┃
+┃
+┗[%sFile%sname]:~ """%(white,red,white))
+
+			base = "%sfile/scan"%self.base
+			params = {"apikey":self.__apikey}
+			request = requests.post(base, data=params, files={'file':file})
+			resp = request.json()
+			results = self.parse_resp(resp)
+			
+			print("""%s
+┃
+┃
+┗[%s%s%s.]"""%(white,red,results["verbose_msg"],white));time.sleep(1)		
+			with open("%s_resource_id.txt"%file, "w") as resource:
+				resource.write(results["scan_id"])
+				print("""%s
+┃
+┃
+┗[Resource ID written to %s%s%s]"""%(white,red,os.getcwd(),white));time.sleep(1)
+				input("""%s
+┃
+┃
+┗[%sPresa %senter%s to continue%s.]:~ """%(white,red,white,red,white))
+						
+		except KeyboardInterrupt:
+			print("""
+┃
+┃
+┗[%sCTRL%s+%sC%s] process aborted.%s"""%(red,white,red,white,reset))
+			sys.exit()
+			
+		except Exception as e:
+			print("""%s
+┃
+┃
+┗[%serror%s]%s %s%s"""%(white,red,white,red,e,reset));time.sleep(1)
+			input("""%s
+┃
+┃
+┗[%sPress %senter%s to continue%s.]:~ """%(white,red,white,red,white))
+					
+		
+	def resource_report(self):
+		"""
+		Getting file scan results (will need file resource/scan id)
+		"""
+		try:
+			resource = input("""%s
+┃
+┃
+┗[%sResource %sID]:~ """%(white,red,white))
+			base = "%sfile/report"%self.base
+			params = {"resource":resource,"apikey":self.__apikey}
+			request = requests.post(base, data=params)
+			resp = request.json()
+			results = self.parse_resp(resp)
+			
+			if results["response_code"] == 0:
+				print("""%s
+┃
+┃
+┗[%s%s%s.]"""%(white,red,results["verbose_msg"].capitalize(),white));time.sleep(1)
+				input("""%s
+┃
+┃
+┗[%sPress %senter%s to continue%s.]:~ """%(white,red,white,red,white))
+			
+			elif results["response_code"] < 0:
+				print("""%s
+┃
+┃
+┗[%s%s%s.]"""%(white,red,results["verbose_msg"].capitalize(),white));time.sleep(1)
+				input("""%s
+┃
+┃
+┗[%sPress %senter%s to continue%s.]:~ """%(white,red,white,red,white))
+				
+			else:
+				print("""\n%s
+┏[%sPosit%sives]
+┃
+┗[%s%s%s]
+┏[%sTotal %sscans]
+┃
+┗[%s%s%s]
+┏[%sScan %stime]
+┃
+┗[%s%s%s]
+┏[%sMD%s5]
+┃
+┗[%s%s%s]
+┏[%sResource %sID]
+┃
+┗[%s%s%s]
+┃
+┃
+┗[%sScan report %s(.json)]"""%(white,red,white,red,results["positives"],white,red,white,red,results["total"],white,red,white,red,results["scan_date"],white,red,white,red,results["md5"],white,red,white,red,results["scan_id"],white,red,white))
+				print("""%s
+┃
+┃
+┗[%s%s%s.]"""%(white,red,results["verbose_msg"],white));time.sleep(1)
+				print(brightred)
+				pprint(results["scans"])
+				print(reset)
+				self.save_results(results)
+						
+		except KeyboardInterrupt:
+			print("""
+┃
+┃
+┗[%sCTRL%s+%sC%s] process aborted.%s"""%(red,white,red,white,reset))
+			sys.exit()
+			
+		except Exception as e:
+			print("""%s
+┃
+┃
+┗[%serror%s]%s %s%s"""%(white,red,white,red,e,reset));time.sleep(1)
+			input("""%s
+┃
+┃
+┗[%sPress %senter%s to continue%s.]:~ """%(white,red,white,red,white))
+		
+		
+	def save_results(self,results):
+	    
+	    result = json.dumps(results, indent = 4)
+	    """
+	    Writing scan results to a json file
+	    """
+	    prompt = input("""%s
+┏━[Write %sreport%s to a file?]
+┃
+┗[%sy%s/%sn%s]:~ """%(white,red,white,red,white,red,white))
+
+	    if prompt.lower() == "y":
+	    	output_name = input("""
+┃
+┃
+┗[%sFile %soutput%s name%s]:~ """%(red,white,red,white,))
+	    	with open("%s_report.json"%output_name, "w") as file:
+	    		file.write(result)
+	    		print("""%s
+┃
+┃
+┗[Scan report written to %s./%s_report.json%s]"""%(white,red,output_name,white));time.sleep(1)
+	    		input("""%s
+┃
+┃
+┗[%sPress %senter%s to continue%s.]:~ """%(white,red,white,red,white))
+	    		
+	    elif prompt.lower() == "n":
+	    	print("""%s
+┃
+┃
+┗[%sn%s] process skipped%s."""%(white,red,white,reset));time.sleep(1)
+	    	input("""%s
+┃
+┃
+┗[%sPress %senter%s to continue%s.]:~ """%(white,red,white,red,white))
+
+	    	
+	    else:
+	    	print("""
+┃
+┃
+┗[%serror%s] invalid: cmd “%s%s%s”%s"""%(red,white,red,prompt,white,reset));time.sleep(3)
+	    	
+	    	
+	def quit(self):
+	    try:
+	        prompt = input("""%s
+┏━[This will terminate %scentaur.04%s. Continue?]
+┃
+┗[%sy%s/%sn%s]:~  """%(white,red,white,red,white,red,white))
+
+	        if prompt.lower() == "y":
+	        	print("""
+┃
+┃
+┗[%sy%s] quiting...%s"""%(red,white,reset));time.sleep(1.5)
+	        	sys.exit()
+	        	
+	        elif prompt.lower() == "n":
+	        	print("""
+┃
+┃
+┗[%sn%s] process cancelled.%s"""%(red,white,reset));time.sleep(2)
+	        	
+	        else:
+	        	print("""
+┃
+┃
+┗[%serror%s] invalid: cmd “%s%s%s”%s"""%(red,white,red,prompt,white,reset));time.sleep(3)
+
+	        	
+	    except KeyboardInterrupt:
+	        print("""
+┃
+┃
+┗[%sCTRL%s+%sC%s] process aborted.%s"""%(red,white,red,white,reset))
+	        sys.exit()
+
+	        
+	    		    	
+	def help(self):
+		"""
+		Print help message, containing a list of commands
+		"""
+		try:
+			input("""%s
+ Commands:
+ *rrpt [get malware scan report]
+ *iprpt [get latest ip info]
+ *drpt [get latest domain info]
+ *submit [submit potential malware for scanning]
+┃
+┃
+┗[%sPress %senter%s to continue%s.]:~ """%(white,red,white,red,white))
+
+			
+		except KeyboardInterrupt:
+			print("""
+┃
+┃
+┗[%sCTRL%s+%sC%s] process aborted.%s"""%(red,white,red,white,reset))
+			sys.exit()
+			
+					
+	def parse_resp(self,resp):
+		""" 
+		Parsing the response from the requests.gets/posts()
+		then returns the data back to the function
+		"""
+		buf = {}
+		for item in resp:
+			buf[item] = resp[item]
+			
+		return buf	
+	
+if __name__=="__main__":
+	start = Scanner()
+	start.centaur()
