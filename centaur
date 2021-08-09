@@ -16,7 +16,7 @@ datefmt=f"{white}%I{red}:{white}%M{red}:{white}%S%p",level=logging.DEBUG)
 class Scanner:	
 	def __init__(self):
 		self.base = "https://www.virustotal.com/vtapi/v2/"
-		self.__apikey=" " # Virus Total API key
+		self.__apikey="d2f2558c5e01b4eae435c929049a25710fb64116d641932f5356e914eef43791" # Virus Total API key
 		
 	def centaur(self):
 		while True:
