@@ -10,10 +10,6 @@ A python malware analysis tool.
 
 Centaur uses the VirusTotal API to scan for malware, with over 50 antivirus databases.
 
-# Prerequisites
-
-**Virus Total API key**
-
 # Installation
 
 **Clone Centaur**
