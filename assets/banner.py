@@ -1,8 +1,8 @@
-import os
+
 from assets.colors import white,reset
 
 def banner():
-	os.system("clear")
+
 	print("""%s
 ┏━━━┓━━━━━━━━━┏┓━━━━━━━━━━━━━━━┏━━━┓┏┓━┏┓
 ┃┏━┓┃━━━━━━━━┏┛┗┓━━━━━━━━━━━━━━┃┏━┓┃┃┃━┃┃
