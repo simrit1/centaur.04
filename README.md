@@ -6,6 +6,7 @@
 ![CodeFactor](https://www.codefactor.io/repository/github/rlyonheart/centaur.04/badge)
 ![Snyk Vulnerabilities for GitHub Repo](https://img.shields.io/snyk/vulnerabilities/github/rlyonheart/centaur.04)
 ![GitHub repo size](https://img.shields.io/github/repo-size/rlyonheart/centaur.04)
+![Lines of code](https://img.shields.io/tokei/lines/github/rlyonheart/centaur.04)
 ![Twitter](https://img.shields.io/twitter/follow/rly0nheart?&style=flat&logo=twitter)
 
 A python malware analysis tool.
