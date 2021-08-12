@@ -26,9 +26,6 @@ Centaur uses the VirusTotal API to scan for malware, with over 50 antivirus data
 
 > python centaur
 
-# Note
-The vulnerability shown above is the API key I provided in the code.
-
 # Developer
 
 **Richard Mwewa (rly0nheart)**
