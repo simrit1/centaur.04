@@ -10,8 +10,8 @@ logging.basicConfig(format=f"""{white}
 ┏[%(asctime)s]
 ┃
 ┃
-┗[{red}%(message)s{white}]""",
-datefmt=f"{white}%I{red}:{white}%M{red}:{white}%S%p",level=logging.DEBUG)
+┗[{red}%(message)s{white}]"""
+,datefmt=f"{white}%I{red}:{white}%M{red}:{white}%S%p",level=logging.DEBUG)
 
 class Scanner:	
 	def __init__(self):
@@ -227,31 +227,19 @@ class Scanner:
 ┗[%sPress %senter%s to continue%s.]:~ """%(white,red,white,red,white))
 				
 			else:
-				print("""\n%s
-┏[%sPosit%sives]
-┃
-┗[%s%s%s]
-┏[%sTotal %sscans]
-┃
-┗[%s%s%s]
-┏[%sScan %stime]
-┃
-┗[%s%s%s]
-┏[%sMD%s5]
-┃
-┗[%s%s%s]
-┏[%sResource %sID]
-┃
-┗[%s%s%s]
-┃
-┃
-┗[%sScan report %s(.json)]"""%(white,red,white,red,results["positives"],white,red,white,red,results["total"],white,red,white,red,results["scan_date"],white,red,white,red,results["md5"],white,red,white,red,results["scan_id"],white,red,white))
 				print("""%s
-┃
-┃
-┗[%s%s%s.]"""%(white,red,results["verbose_msg"],white));time.sleep(1)
+├── positives: %s%s%s
+├── total scans: %s%s%s
+├── scan time: %s%s%s
+├── md5: %s%s%s
+├── resource id: %s%s%s
+"""%(white,red,results["positives"],white,red,results["total"],white,red,results["scan_date"],white,red,results["md5"],white,red,results["scan_id"],white));time.sleep(1)
 				print(brightred)
 				pprint(results["scans"])
+				print("""%s
+├── scan report: json() format
+└── verbose nessage: %s%s%s
+"""%(white,red,results["verbose_msg"],white))
 				print(reset)
 				self.save_results(results)
 						
